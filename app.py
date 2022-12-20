@@ -4,26 +4,51 @@ from PIL import Image
 import numpy as np
 img_height = 48
 img_width = 48
-img_file_buffer = st.camera_input("Take a picture")
+
 model = tf.keras.models.load_model("EmotionDetecttor_2")
 class_names = ['angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
-if img_file_buffer:
-    st.image(img_file_buffer)
-    # To read image file buffer as a PIL Image:
-    img = Image.open(img_file_buffer)
-    img_array = tf.keras.utils.img_to_array(img.resize((48,48)))
-    img_array = tf.expand_dims(img_array, 0)
+st.header("Welcome Emotion Detection App")
+select = st.selectbox("Choose an option", ["Upload a picture", "Use your Webcam"])
+if select == "Upload a picture":
+    img_file_buffer = st.file_uploader("Choose a file")
+    if img_file_buffer is not None:
+    # To read file as bytes:
+        st.image(img_file_buffer)
+        img = Image.open(img_file_buffer)
+        
+        img = img.convert('RGB')
 
-#img = tf.keras.utils.load_img( picture, target_size=(img_height, img_width))
-# To read image file buffer as a 3D uint8 tensor with TensorFlow:
-    
-#img_array = tf.keras.utils.img_to_array(img)
-#img_array = tf.expand_dims(img_array, 0) # Create a batch
+        #img = img.resize((48,48))
+        img_array = tf.keras.utils.img_to_array(img)
+        img_array = tf.expand_dims(img_array, 0)
 
-    predictions = model.predict(img_array)
-    score = tf.nn.softmax(predictions[0])
+        st.write(img_array.shape)
+        predictions = model.predict(img_array)
+        score = tf.nn.softmax(predictions[0])
 
-    st.write(
-        "This image most likely belongs to {} with a {:.2f} percent confidence."
-        .format(class_names[np.argmax(score)], 100 * np.max(score))
-    )
+        st.write(
+            "This image most likely belongs to {} with a {:.2f} percent confidence."
+            .format(class_names[np.argmax(score)], 100 * np.max(score))
+        )
+if select =="Use your Webcam":
+    img_file_buffer = st.camera_input("Take a picture")
+    if img_file_buffer:
+        st.image(img_file_buffer)
+        # To read image file buffer as a PIL Image:
+        img = Image.open(img_file_buffer)
+        img_array = tf.keras.utils.img_to_array(img.resize((48,48)))
+        img_array = tf.expand_dims(img_array, 0)
+        st.write(img_array.shape)
+    #img = tf.keras.utils.load_img( picture, target_size=(img_height, img_width))
+    # To read image file buffer as a 3D uint8 tensor with TensorFlow:
+        
+    #img_array = tf.keras.utils.img_to_array(img)
+    #img_array = tf.expand_dims(img_array, 0) # Create a batch
+
+        predictions = model.predict(img_array)
+        score = tf.nn.softmax(predictions[0])
+
+        st.write(
+            "This image most likely belongs to {} with a {:.2f} percent confidence."
+            .format(class_names[np.argmax(score)], 100 * np.max(score))
+        )
