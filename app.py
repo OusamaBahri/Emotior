@@ -36,6 +36,8 @@ if select =="Use your Webcam":
         st.image(img_file_buffer)
         # To read image file buffer as a PIL Image:
         img = Image.open(img_file_buffer)
+        img = img.convert("L")
+        img = img.convert('RGB')
         img_array = tf.keras.utils.img_to_array(img.resize((48,48)))
         img_array = tf.expand_dims(img_array, 0)
         st.write(img_array.shape)
