@@ -4,7 +4,7 @@ import numpy as np
 img_height = 48
 img_width = 48
 img_file_buffer = st.camera_input("Take a picture")
-model = tf.keras.models.load_model("/EmotionDetecttor_2")
+model = tf.keras.models.load_model("EmotionDetecttor")
 class_names = ['angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 if img_file_buffer:
     st.image(img_file_buffer)
