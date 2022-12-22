@@ -2,6 +2,7 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 import numpy as np
+import pandas as pd
 img_height = 48
 img_width = 48
 
@@ -18,16 +19,21 @@ if select == "Upload a picture":
         
         img = img.convert('RGB')
 
-        #img = img.resize((48,48))
+    
         img_array = tf.keras.utils.img_to_array(img)
         img_array = tf.expand_dims(img_array, 0)
 
-        st.write(img_array.shape)
         predictions = model.predict(img_array)
         score = tf.nn.softmax(predictions[0])
-
-        st.write(
-            "This image most likely belongs to {} with a {:.2f} percent confidence."
+        scoring = {}
+        for i in range(len(class_names)):
+            scoring[class_names[i]] = score[i].numpy()
+        df = pd.DataFrame(scoring, index=[0])
+        for col in df.columns:
+            df[col]= df[col].map('{:,.2f}'.format)
+        st.dataframe(df.style.highlight_max(axis=1))
+        st.markdown(
+            "This image most likely belongs to **_{}_** with a **_{:.2f}_** percent confidence."
             .format(class_names[np.argmax(score)], 100 * np.max(score))
         )
 if select =="Use your Webcam":
@@ -43,7 +49,14 @@ if select =="Use your Webcam":
         predictions = model.predict(img_array)
         score = tf.nn.softmax(predictions[0])
 
-        st.write(
-            "This image most likely belongs to {} with a {:.2f} percent confidence."
+        scoring = {}
+        for i in range(len(class_names)):
+            scoring[class_names[i]] = score[i].numpy()
+        df = pd.DataFrame(scoring, index=[0])
+        for col in df.columns:
+            df[col]= df[col].map('{:,.2f}'.format)
+        st.dataframe(df.style.highlight_max(axis=1))
+        st.markdown(
+            "This image most likely belongs to **_{}_** with a **_{:.2f}_** percent confidence."
             .format(class_names[np.argmax(score)], 100 * np.max(score))
         )
